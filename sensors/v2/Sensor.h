@@ -41,9 +41,6 @@ namespace V2_1 {
 namespace subhal {
 namespace implementation {
 
-extern std::string GetPollPath(const char** array);
-extern bool IsFileValid(const std::string& file);
-
 class ISensorsEventCallback {
   public:
     virtual ~ISensorsEventCallback(){};
@@ -95,29 +92,6 @@ class OneShotSensor : public Sensor {
     virtual Result flush() override { return Result::BAD_VALUE; }
 };
 
-class UdfpsSensor : public OneShotSensor {
-  public:
-    UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback);
-    virtual ~UdfpsSensor() override;
-
-    virtual void activate(bool enable) override;
-    virtual void setOperationMode(OperationMode mode) override;
-
-  protected:
-    virtual void run() override;
-    virtual std::vector<Event> readEvents();
-
-  private:
-    void interruptPoll();
-
-    struct pollfd mPolls[2];
-    int mWaitPipeFd[2];
-    int mPollFd;
-
-    int mScreenX;
-    int mScreenY;
-};
-
 class SysfsPollingOneShotSensor : public OneShotSensor {
   public:
     SysfsPollingOneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callback,
@@ -141,39 +115,6 @@ class SysfsPollingOneShotSensor : public OneShotSensor {
     int mWaitPipeFd[2];
     int mPollFd;
 };
-
-#ifdef USES_DOUBLE_TAP_SENSOR
-static const char* doubleTapPaths[] = {
-  "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/double_tap_pressed",
-  NULL
-};
-
-class DoubleTapSensor : public SysfsPollingOneShotSensor {
-  public:
-    DoubleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
-        : SysfsPollingOneShotSensor(
-              sensorHandle, callback, GetPollPath(doubleTapPaths),
-              "Double Tap Sensor", "com.statixos.sensor.double_tap",
-              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
-};
-#endif
-
-#ifdef USES_SINGLE_TAP_SENSOR
-static const char* singleTapPaths[] = {
-  "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/single_tap_pressed",
-  "/sys/devices/platform/soc/a8c000.spi/spi_master/spi1/spi1.0/single_tap_pressed",
-  NULL
-};
-
-class SingleTapSensor : public SysfsPollingOneShotSensor {
-  public:
-    SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
-        : SysfsPollingOneShotSensor(
-              sensorHandle, callback, GetPollPath(singleTapPaths),
-              "Single Tap Sensor", "com.statixos.sensor.single_tap",
-              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
-};
-#endif
 
 }  // namespace implementation
 }  // namespace subhal
