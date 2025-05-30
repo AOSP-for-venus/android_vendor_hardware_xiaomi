@@ -95,29 +95,6 @@ class OneShotSensor : public Sensor {
     virtual Result flush() override { return Result::BAD_VALUE; }
 };
 
-class UdfpsSensor : public OneShotSensor {
-  public:
-    UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback);
-    virtual ~UdfpsSensor() override;
-
-    virtual void activate(bool enable) override;
-    virtual void setOperationMode(OperationMode mode) override;
-
-  protected:
-    virtual void run() override;
-    virtual std::vector<Event> readEvents();
-
-  private:
-    void interruptPoll();
-
-    struct pollfd mPolls[2];
-    int mWaitPipeFd[2];
-    int mPollFd;
-
-    int mScreenX;
-    int mScreenY;
-};
-
 class SysfsPollingOneShotSensor : public OneShotSensor {
   public:
     SysfsPollingOneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callback,
@@ -174,6 +151,23 @@ class SingleTapSensor : public SysfsPollingOneShotSensor {
               static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
 };
 #endif
+
+class UdfpsSensor : public SysfsPollingOneShotSensor {
+  public:
+    UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
+        : SysfsPollingOneShotSensor(
+                  sensorHandle, callback, "/sys/class/touch/touch_dev/fod_press_status",
+                  "/sys/class/touch/touch_dev/fod_longpress_gesture_enabled", "UDFPS Sensor",
+                  "org.lineageos.sensor.udfps",
+                  static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) +
+                                          3)) {}
+    virtual void fillEventData(Event& event);
+    virtual bool readFd(const int fd);
+
+  private:
+    int mScreenX;
+    int mScreenY;
+};
 
 }  // namespace implementation
 }  // namespace subhal
