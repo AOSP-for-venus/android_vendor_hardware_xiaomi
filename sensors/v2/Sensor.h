@@ -130,12 +130,17 @@ static const char* doubleTapPaths[] = {
   NULL
 };
 
+static const char* doubleTapPathsEnable[] = {
+  "/sys/class/touch/touch_dev/gesture_double_tap_enabled",
+  NULL
+};
+
 class DoubleTapSensor : public SysfsPollingOneShotSensor {
   public:
     DoubleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
         : SysfsPollingOneShotSensor(
               sensorHandle, callback, GetPollPath(doubleTapPaths),
-              "Double Tap Sensor", "com.statixos.sensor.double_tap",
+              GetPollPath(doubleTapPathsEnable), "Double Tap Sensor", "com.statixos.sensor.double_tap",
               static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
 };
 #endif
@@ -147,12 +152,17 @@ static const char* singleTapPaths[] = {
   NULL
 };
 
+static const char* singleTapPathsEnable[] = {
+  "/sys/class/touch/touch_dev/gesture_single_tap_enabled",
+  NULL
+};
+
 class SingleTapSensor : public SysfsPollingOneShotSensor {
   public:
     SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
         : SysfsPollingOneShotSensor(
               sensorHandle, callback, GetPollPath(singleTapPaths),
-              "Single Tap Sensor", "com.statixos.sensor.single_tap",
+              GetPollPath(singleTapPathsEnable), "Single Tap Sensor", "com.statixos.sensor.single_tap",
               static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
 };
 #endif
