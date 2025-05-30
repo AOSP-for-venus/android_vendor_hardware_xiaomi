@@ -22,6 +22,8 @@
 
 #include <cmath>
 
+namespace {
+
 static bool readBool(int fd, bool seek) {
     char c;
     int rc;
@@ -42,6 +44,8 @@ static bool readBool(int fd, bool seek) {
 
     return c != '0';
 }
+
+}  // anonymous namespace
 
 namespace android {
 namespace hardware {
@@ -214,9 +218,9 @@ OneShotSensor::OneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callba
 }
 
 SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
-    int32_t sensorHandle, ISensorsEventCallback* callback, const std::string& pollPath,
-    const std::string& name, const std::string& typeAsString,
-    SensorType type)
+        int32_t sensorHandle, ISensorsEventCallback* callback, const std::string& pollPath,
+        const std::string& enablePath, const std::string& name, const std::string& typeAsString,
+        SensorType type)
     : OneShotSensor(sensorHandle, callback) {
     mSensorInfo.name = name;
     mSensorInfo.type = type;
@@ -225,6 +229,8 @@ SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
     mSensorInfo.resolution = 1.0f;
     mSensorInfo.power = 0;
     mSensorInfo.flags |= SensorFlagBits::WAKE_UP;
+
+    mEnableStream.open(enablePath);
 
     int rc;
 
@@ -258,6 +264,12 @@ SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
 
 SysfsPollingOneShotSensor::~SysfsPollingOneShotSensor() {
     interruptPoll();
+}
+
+void SysfsPollingOneShotSensor::writeEnable(bool enable) {
+    if (mEnableStream) {
+        mEnableStream << (enable ? '1' : '0') << std::flush;
+    }
 }
 
 void SysfsPollingOneShotSensor::activate(bool enable, bool notify, bool lock) {
