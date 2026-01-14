@@ -128,44 +128,40 @@ class SysfsPollingOneShotSensor : public OneShotSensor {
 
 #ifdef USES_DOUBLE_TAP_SENSOR
 static const char* doubleTapPaths[] = {
-  "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/double_tap_pressed",
-  NULL
-};
+        "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/double_tap_pressed", NULL};
 
 static const char* doubleTapPathsEnable[] = {
-  "/sys/class/touch/touch_dev/gesture_double_tap_enabled",
-  NULL
-};
+        "/sys/class/touch/touch_dev/gesture_double_tap_enabled", NULL};
 
 class DoubleTapSensor : public SysfsPollingOneShotSensor {
   public:
     DoubleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
         : SysfsPollingOneShotSensor(
-              sensorHandle, callback, GetPollPath(doubleTapPaths),
-              GetPollPath(doubleTapPathsEnable), "Double Tap Sensor", "com.statixos.sensor.double_tap",
-              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
+                  sensorHandle, callback, GetPollPath(doubleTapPaths),
+                  GetPollPath(doubleTapPathsEnable), "Double Tap Sensor",
+                  "com.statixos.sensor.double_tap",
+                  static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) +
+                                          1)) {}
 };
 #endif
 
 #ifdef USES_SINGLE_TAP_SENSOR
 static const char* singleTapPaths[] = {
-  "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/single_tap_pressed",
-  "/sys/devices/platform/soc/a8c000.spi/spi_master/spi1/spi1.0/single_tap_pressed",
-  NULL
-};
+        "/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/single_tap_pressed",
+        "/sys/devices/platform/soc/a8c000.spi/spi_master/spi1/spi1.0/single_tap_pressed", NULL};
 
 static const char* singleTapPathsEnable[] = {
-  "/sys/class/touch/touch_dev/gesture_single_tap_enabled",
-  NULL
-};
+        "/sys/class/touch/touch_dev/gesture_single_tap_enabled", NULL};
 
 class SingleTapSensor : public SysfsPollingOneShotSensor {
   public:
     SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
         : SysfsPollingOneShotSensor(
-              sensorHandle, callback, GetPollPath(singleTapPaths),
-              GetPollPath(singleTapPathsEnable), "Single Tap Sensor", "com.statixos.sensor.single_tap",
-              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
+                  sensorHandle, callback, GetPollPath(singleTapPaths),
+                  GetPollPath(singleTapPathsEnable), "Single Tap Sensor",
+                  "com.statixos.sensor.single_tap",
+                  static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) +
+                                          1)) {}
 };
 #endif
 

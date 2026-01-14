@@ -99,7 +99,7 @@ const SensorInfo& Sensor::getSensorInfo() const {
 
 void Sensor::batch(int32_t samplingPeriodNs) {
     samplingPeriodNs =
-        std::clamp(samplingPeriodNs, mSensorInfo.minDelay * 1000, mSensorInfo.maxDelay * 1000);
+            std::clamp(samplingPeriodNs, mSensorInfo.minDelay * 1000, mSensorInfo.maxDelay * 1000);
 
     if (mSamplingPeriodNs != samplingPeriodNs) {
         mSamplingPeriodNs = samplingPeriodNs;
@@ -250,13 +250,13 @@ SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
     }
 
     mPolls[0] = {
-        .fd = mWaitPipeFd[0],
-        .events = POLLIN,
+            .fd = mWaitPipeFd[0],
+            .events = POLLIN,
     };
 
     mPolls[1] = {
-        .fd = mPollFd,
-        .events = POLLERR | POLLPRI,
+            .fd = mPollFd,
+            .events = POLLERR | POLLPRI,
     };
 }
 
@@ -265,9 +265,7 @@ SysfsPollingOneShotSensor::~SysfsPollingOneShotSensor() {
 }
 
 void SysfsPollingOneShotSensor::writeEnable(bool enable) {
-    std::call_once(mEnableOpenOnce, [&] {
-        mEnableStream.open(mEnablePath);
-    });
+    std::call_once(mEnableOpenOnce, [&] { mEnableStream.open(mEnablePath); });
 
     if (mEnableStream) {
         mEnableStream << (enable ? '1' : '0') << std::flush;
@@ -284,7 +282,6 @@ void SysfsPollingOneShotSensor::activate(bool enable, bool notify, bool lock) {
     }
 
     if (mIsEnabled != enable) {
-
         mIsEnabled = enable;
 
         if (notify) {
@@ -399,19 +396,18 @@ bool UdfpsSensor::readFd(const int fd) {
 }
 
 bool IsPathValid(const std::string& path) {
-  std::ifstream file(path);
-  return file.good();
+    std::ifstream file(path);
+    return file.good();
 }
 
 std::string GetPollPath(const char** array) {
-  for (; *array != NULL; ++array) {
-    const char* path = *array;
+    for (; *array != NULL; ++array) {
+        const char* path = *array;
 
-    if (IsPathValid(path))
-      return path;
-  }
+        if (IsPathValid(path)) return path;
+    }
 
-  return "";
+    return "";
 }
 
 }  // namespace implementation
